@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アイコン生成</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .icon-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .icon {
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+        .icon-192 {
+            width: 192px;
+            height: 192px;
+        }
+        .icon-512 {
+            width: 512px;
+            height: 512px;
+            font-size: 64px;
+        }
+        .instructions {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>PWAアイコン生成</h1>
+    <p>以下のアイコンを右クリックして「名前を付けて画像を保存」してください。</p>
+    
+    <div class="icon-container">
+        <div class="icon icon-192">⏰</div>
+        <div class="icon icon-512">⏰</div>
+    </div>
+    
+    <div class="instructions">
+        <h3>保存手順:</h3>
+        <ol>
+            <li>192x192のアイコンを右クリック → 「名前を付けて画像を保存」→ ファイル名を「icon-192.png」として保存</li>
+            <li>512x512のアイコンを右クリック → 「名前を付けて画像を保存」→ ファイル名を「icon-512.png」として保存</li>
+            <li>保存したファイルをプロジェクトのルートディレクトリに配置</li>
+        </ol>
+        <p><strong>注意:</strong> このHTMLファイルは開発用です。本番環境では削除してください。</p>
+    </div>
+</body>
+</html>

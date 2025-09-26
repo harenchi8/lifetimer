@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時間タイマー</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=SUSE+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="人生の残り時間をカウントダウン表示するPWAアプリ">
+</head>
+<body>
+    <div class="container">
+        <!-- 入力フォーム -->
+        <div id="inputForm" class="form-container">
+            <h1>人生残り時間タイマー</h1>
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="birthDate">生年月日</label>
+                    <input type="date" id="birthDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">性別</label>
+                    <select id="gender" required>
+                        <option value="">選択してください</option>
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="targetAge">目標寿命（歳）</label>
+                    <input type="number" id="targetAge" min="1" max="150" placeholder="自動設定">
+                    <small>空白の場合は平均寿命を使用します</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>表示設定</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showSleepCount">
+                            <span class="checkmark"></span>
+                            残り睡眠回数を表示
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showMealCount">
+                            <span class="checkmark"></span>
+                            残り食事回数を表示
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>家族構成</label>
+                    <div id="familyContainer">
+                        <!-- 家族メンバーがここに動的に追加される -->
+                    </div>
+                    <button type="button" id="addFamilyBtn" class="add-family-btn">+ 家族を追加</button>
+                </div>
+                
+                <div class="form-buttons">
+                    <button type="submit">タイマー開始</button>
+                    <button type="button" id="resetFormBtn" class="reset-form-btn">入力内容をリセット</button>
+                    <button type="button" id="clearAllDataBtn" class="clear-all-btn">全データを削除</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- タイマー表示 -->
+        <div id="timerDisplay" class="timer-container" style="display: none;">
+            <div class="timer-header">
+                <h1>あなたの時間</h1>
+            </div>
+            
+            <div class="countdown-display">
+                <div class="countdown-grid">
+                    <div class="countdown-item">
+                        <div id="countdownYears" class="countdown-number">--</div>
+                        <div class="countdown-unit">年</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="countdownMonths" class="countdown-number">--</div>
+                        <div class="countdown-unit">ヶ月</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="countdownDays" class="countdown-number">--</div>
+                        <div class="countdown-unit">日</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="countdownHours" class="countdown-number">--</div>
+                        <div class="countdown-unit">時間</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="countdownMinutes" class="countdown-number">--</div>
+                        <div class="countdown-unit">分</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div id="countdownSeconds" class="countdown-number">--</div>
+                        <div class="countdown-unit">秒</div>
+                    </div>
+                </div>
+                <div class="progress-indicator">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <!-- <div class="progress-text">
+                        <span id="progressPercentage">0%</span>
+                        <span class="progress-label">人生の進捗</span>
+                    </div> -->
+                </div>
+            </div>
+            
+            <div class="actions-display">
+                <div class="action-item">
+                    <span class="action-label">残り睡眠回数<br>（1日一回換算）</span>
+                    <span id="sleepCount" class="action-count">--</span>
+                </div>
+                <div class="action-item">
+                    <span class="action-label">残り食事回数<br>（1日3食換算）</span>
+                    <span id="mealCount" class="action-count">--</span>
+                </div>
+            </div>
+            
+            <div id="familyTimeDisplay" class="family-time-display" style="display: none;">
+                <div id="familyTimeList" class="family-time-list">
+                    <!-- 家族との時間がここに表示される -->
+                </div>
+            </div>
+            
+            <div class="settings-icon">
+                <button id="resetBtn" class="settings-btn" title="設定をリセット">⚙️</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // サービスワーカーの登録
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('サービスワーカーが登録されました:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('サービスワーカーの登録に失敗しました:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
